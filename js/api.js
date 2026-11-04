@@ -87,13 +87,16 @@ const API = {
 
   solicitarCodigo(correo)            { return this.llamar('solicitarCodigo', { correo }); },
   verificarCodigo(correo, codigo)    { return this.llamar('verificarCodigo', { correo, codigo }); },
-  crearContrasena(correo, codigo, contrasena) {
-    return this.llamar('crearContrasena', { correo, codigo, contrasena });
+  crearContrasena(correo, codigo, contrasena, usuario) {
+    return this.llamar('crearContrasena', { correo, codigo, contrasena, usuario });
   },
   entrar(correo, contrasena)         { return this.llamar('entrar', { correo, contrasena }); },
   yo()                               { return this.llamar('yo', { sesion: this.sesion() }); },
   cambiarContrasena(actual, nueva)   {
     return this.llamar('cambiarContrasena', { sesion: this.sesion(), actual, nueva });
+  },
+  cambiarUsuario(usuario)            {
+    return this.llamar('cambiarUsuario', { sesion: this.sesion(), usuario });
   },
   marcarInstalada()                  { return this.llamar('marcarInstalada', { sesion: this.sesion() }); },
   salir()                            { return this.llamar('salir', { sesion: this.sesion() }); }

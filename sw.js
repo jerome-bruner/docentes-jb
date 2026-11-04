@@ -10,7 +10,7 @@
 // que nadie entre con datos viejos.
 // ============================================================
 
-const VERSION = "1.0.0";
+const VERSION = "1.1.1";
 const CACHE = "docentes-jb-" + VERSION;
 
 const CASCARA = [

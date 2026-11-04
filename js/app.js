@@ -14,11 +14,13 @@ const App = {
   docente: null,
   correoEnTramite: '',
   codigoEnTramite: '',
+  usuarioSugerido: '',
 
   // ---------- arranque ----------
 
   async iniciar() {
     Instalar.escuchar();
+    this.engancharVerContrasena();
     this.pintarCargando();
 
     if (!API.sesion()) { this.verEntrar(); return; }
@@ -65,6 +67,42 @@ const App = {
 
   aviso(texto, tipo) {
     return '<div class="aviso ' + (tipo || 'r') + '">' + this.escapar(texto) + '</div>';
+  },
+
+  /**
+   * Un campo de contraseña con su botón de «Ver».
+   * El botón dice qué va a pasar al tocarlo, no en qué estado está:
+   * «Ver» cuando está tapada y «Ocultar» cuando se ve.
+   */
+  campoPass(id, etiqueta, autocompletar) {
+    return '<div class="campo"><label for="' + id + '">' + etiqueta + '</label>' +
+      '<div class="conpass">' +
+        '<input id="' + id + '" type="password" autocomplete="' + autocompletar + '">' +
+        '<button type="button" class="verpass" data-ver="' + id + '" ' +
+        'aria-label="Mostrar la contraseña">Ver</button>' +
+      '</div></div>';
+  },
+
+  /** Un solo escucha para todos los botones de ver, puestos donde sea. */
+  engancharVerContrasena() {
+    document.addEventListener('click', (ev) => {
+      const boton = ev.target.closest('.verpass');
+      if (!boton) return;
+      const campo = document.getElementById(boton.dataset.ver);
+      if (!campo) return;
+
+      const estaTapada = campo.type === 'password';
+      campo.type = estaTapada ? 'text' : 'password';
+      boton.textContent = estaTapada ? 'Ocultar' : 'Ver';
+      boton.setAttribute('aria-label',
+        estaTapada ? 'Ocultar la contraseña' : 'Mostrar la contraseña');
+
+      // Se devuelve el cursor al final de lo escrito, para poder
+      // seguir tecleando sin volver a tocar el campo.
+      campo.focus();
+      const n = campo.value.length;
+      try { campo.setSelectionRange(n, n); } catch (e) {}
+    });
   },
 
   escapar(t) {
@@ -114,11 +152,11 @@ const App = {
     this.pintar(
       '<div class="bloque">' +
         '<h1 class="h" style="text-align:center;margin-bottom:14px">Entrar</h1>' +
-        '<div class="campo"><label for="e-correo">Correo institucional</label>' +
-          '<input id="e-correo" type="email" inputmode="email" autocomplete="username" ' +
-          'autocapitalize="off" autocorrect="off" placeholder="nombre@jeromebrunermorelia.edu.mx"></div>' +
-        '<div class="campo"><label for="e-pass">Contraseña</label>' +
-          '<input id="e-pass" type="password" autocomplete="current-password"></div>' +
+        '<div class="campo"><label for="e-correo">Tu usuario o tu correo</label>' +
+          '<input id="e-correo" type="text" autocomplete="username" ' +
+          'autocapitalize="off" autocorrect="off" spellcheck="false" ' +
+          'placeholder="aliciaam"></div>' +
+        this.campoPass('e-pass', 'Contraseña', 'current-password') +
         '<div id="e-error"></div>' +
         '<button class="btn" id="e-btn" style="margin-top:12px">Entrar</button>' +
         '<p class="mini"><button class="enlace" id="e-olvide">Olvidé mi contraseña</button></p>' +
@@ -143,6 +181,8 @@ const App = {
     const btn = document.getElementById('e-btn');
 
     if (!correo || !pass) { this.mostrarError('e-error', 'Llena los dos campos.'); return; }
+    // Si entró con su usuario, no hay correo que prellenar más adelante.
+    const pareceCorreo = correo.indexOf('@') !== -1;
 
     this.limpiarError('e-error');
     this.ocupado(btn, true, 'Entrando…');
@@ -150,7 +190,7 @@ const App = {
     this.ocupado(btn, false);
 
     if (!r.ok) {
-      if (r.codigo === 'SIN_CONTRASENA') { this.verAlta(false, correo); return; }
+      if (r.codigo === 'SIN_CONTRASENA') { this.verAlta(false, pareceCorreo ? correo : ''); return; }
       this.mostrarError('e-error', r.error);
       return;
     }
@@ -294,6 +334,7 @@ const App = {
     }
 
     this.codigoEnTramite = codigo;
+    this.usuarioSugerido = r.usuarioSugerido || '';
     this.verContrasena();
   },
 
@@ -312,13 +353,18 @@ const App = {
 
   verContrasena() {
     this.pintar(
-      '<h1 class="h">Tu contraseña</h1>' +
-      '<p class="s">Con esta entras de aquí en adelante. Dirección no la ve.</p>' +
+      '<h1 class="h">Tu usuario y tu contraseña</h1>' +
+      '<p class="s">Con estos entras de aquí en adelante. Dirección no ve tu contraseña.</p>' +
       '<div class="bloque">' +
-        '<div class="campo"><label for="p1">Contraseña nueva</label>' +
-          '<input id="p1" type="password" autocomplete="new-password"></div>' +
-        '<div class="campo"><label for="p2">Escríbela otra vez</label>' +
-          '<input id="p2" type="password" autocomplete="new-password"></div>' +
+        '<div class="campo"><label for="pu">Nombre de usuario</label>' +
+          '<input id="pu" type="text" autocapitalize="off" autocorrect="off" ' +
+          'spellcheck="false" autocomplete="username" value="' +
+          this.escapar(this.usuarioSugerido) + '"></div>' +
+        '<p class="mini" style="text-align:left;margin:-6px 0 12px 2px">' +
+        'Es con lo que vas a entrar, para no teclear tu correo completo. ' +
+        'Puedes dejar el que te proponemos.</p>' +
+        this.campoPass('p1', 'Contraseña nueva', 'new-password') +
+        this.campoPass('p2', 'Escríbela otra vez', 'new-password') +
         '<div id="p-reglas">' + this.reglasHTML('') + '</div>' +
         '<div id="p-error"></div>' +
         '<button class="btn" id="p-btn" style="margin-top:12px">Guardar y entrar</button>' +
@@ -351,15 +397,18 @@ const App = {
   },
 
   async guardarContrasena() {
+    const usuario = (document.getElementById('pu').value || '').trim();
     const p1 = document.getElementById('p1').value || '';
     const p2 = document.getElementById('p2').value || '';
     const btn = document.getElementById('p-btn');
 
+    if (!usuario) { this.mostrarError('p-error', 'Escribe un nombre de usuario.'); return; }
     if (p1 !== p2) { this.mostrarError('p-error', 'Las dos contraseñas no son iguales.'); return; }
 
     this.limpiarError('p-error');
     this.ocupado(btn, true, 'Guardando…');
-    const r = await API.crearContrasena(this.correoEnTramite, this.codigoEnTramite, p1);
+    const r = await API.crearContrasena(
+      this.correoEnTramite, this.codigoEnTramite, p1, usuario);
     this.ocupado(btn, false);
 
     if (!r.ok) { this.mostrarError('p-error', r.error); return; }
@@ -485,7 +534,12 @@ const App = {
         despues: () => {
           document.getElementById('b-datos').onclick = () => this.verMisDatos();
           document.querySelectorAll('.acceso').forEach((b) => {
-            b.onclick = () => window.open(b.dataset.url, '_blank', 'noopener');
+            // En la MISMA ventana, no en una pestaña nueva. Lo que pase
+            // después lo decide el teléfono: desde la app instalada,
+            // Android abre la liga adentro con una flecha para regresar
+            // y iPhone suele saltar a Safari. Eso no se controla desde
+            // aquí; lo que sí, es no forzar una pestaña de más.
+            b.onclick = () => { window.location.href = b.dataset.url; };
           });
         }}
     );
@@ -515,13 +569,14 @@ const App = {
     const d = this.docente || {};
     this.pintar(
       '<div class="bloque"><h4>Mi cuenta</h4>' +
-        '<div class="reng"><span class="et">Correo</span>' +
-          '<span class="vl">' + this.escapar(d.correo || '') + '</span></div>' +
+        '<div class="reng"><span class="et">Usuario</span>' +
+          '<span class="vl">' + this.escapar(d.usuario || '—') + '</span></div>' +
         (d.asignaturas ? '<div class="reng"><span class="et">Asignaturas</span>' +
           '<span class="vl">' + this.escapar(d.asignaturas) + '</span></div>' : '') +
         (d.grupos ? '<div class="reng"><span class="et">Grupos</span>' +
           '<span class="vl">' + this.escapar(d.grupos) + '</span></div>' : '') +
       '</div>' +
+      '<button class="btn sec" id="d-usuario">Cambiar mi nombre de usuario</button>' +
       '<button class="btn sec" id="d-cambiar">Cambiar mi contraseña</button>' +
       '<div class="bloque" style="margin-top:14px"><h4>La app</h4>' +
         '<div class="reng"><span class="et">Versión</span>' +
@@ -537,8 +592,41 @@ const App = {
       { titulo: 'Mis datos', sub: this.escapar(d.nombre || ''), despues: () => {
         document.getElementById('d-volver').onclick = () => this.verInicio();
         document.getElementById('d-cambiar').onclick = () => this.verCambiarContrasena();
+        document.getElementById('d-usuario').onclick = () => this.verCambiarUsuario();
         document.getElementById('d-actualizar').onclick = () => this.actualizar();
         document.getElementById('d-salir').onclick = () => this.salir();
+      }}
+    );
+  },
+
+  verCambiarUsuario() {
+    const d = this.docente || {};
+    this.pintar(
+      '<div class="bloque">' +
+        '<div class="campo"><label for="u1">Nombre de usuario</label>' +
+          '<input id="u1" type="text" autocapitalize="off" autocorrect="off" ' +
+          'spellcheck="false" value="' + this.escapar(d.usuario || '') + '"></div>' +
+        '<div id="u-error"></div>' +
+        '<button class="btn" id="u-btn" style="margin-top:10px">Guardar</button>' +
+      '</div>' +
+      this.aviso('Con este nombre entras a la app, en lugar de tu correo. ' +
+                 'Tu correo sigue sirviendo igual.', 'a') +
+      '<button class="btn gris" id="u-volver" style="margin-top:14px">Volver</button>',
+      { titulo: 'Nombre de usuario', despues: () => {
+        document.getElementById('u-volver').onclick = () => this.verMisDatos();
+        document.getElementById('u-btn').onclick = async () => {
+          const u = (document.getElementById('u1').value || '').trim();
+          const btn = document.getElementById('u-btn');
+
+          this.limpiarError('u-error');
+          this.ocupado(btn, true, 'Guardando…');
+          const r = await API.cambiarUsuario(u);
+          this.ocupado(btn, false);
+
+          if (!r.ok) { this.mostrarError('u-error', r.error); return; }
+          this.docente = r.docente;
+          this.verMisDatos();
+        };
       }}
     );
   },
@@ -546,12 +634,9 @@ const App = {
   verCambiarContrasena() {
     this.pintar(
       '<div class="bloque">' +
-        '<div class="campo"><label for="x0">Tu contraseña de ahora</label>' +
-          '<input id="x0" type="password" autocomplete="current-password"></div>' +
-        '<div class="campo"><label for="x1">La nueva</label>' +
-          '<input id="x1" type="password" autocomplete="new-password"></div>' +
-        '<div class="campo"><label for="x2">Escríbela otra vez</label>' +
-          '<input id="x2" type="password" autocomplete="new-password"></div>' +
+        this.campoPass('x0', 'Tu contraseña de ahora', 'current-password') +
+        this.campoPass('x1', 'La nueva', 'new-password') +
+        this.campoPass('x2', 'Escríbela otra vez', 'new-password') +
         '<div id="x-error"></div>' +
         '<button class="btn" id="x-btn" style="margin-top:10px">Guardar</button>' +
       '</div>' +
