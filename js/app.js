@@ -361,8 +361,9 @@ const App = {
           'spellcheck="false" autocomplete="username" value="' +
           this.escapar(this.usuarioSugerido) + '"></div>' +
         '<p class="mini" style="text-align:left;margin:-6px 0 12px 2px">' +
-        'Es con lo que vas a entrar, para no teclear tu correo completo. ' +
-        'Puedes dejar el que te proponemos.</p>' +
+        'Es con lo que vas a entrar y lo que se ve en la app. Puedes dejar el que ' +
+        'te proponemos o poner otro, con espacios y acentos si quieres ' +
+        '(por ejemplo «Miss Alice»).</p>' +
         this.campoPass('p1', 'Contraseña nueva', 'new-password') +
         this.campoPass('p2', 'Escríbela otra vez', 'new-password') +
         '<div id="p-reglas">' + this.reglasHTML('') + '</div>' +

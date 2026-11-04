@@ -19,7 +19,7 @@ const CONFIG = {
   API: "https://script.google.com/macros/s/AKfycbyR7Y4jJwQNfk95jHdp65OqEtw4apXWR75DNBJ9dLznk8fyHXmIfDoO9B9Zfla8Ooj0/exec",
 
   // Sube este número en cada cambio. También en sw.js.
-  VERSION: "1.1.1",
+  VERSION: "1.1.2",
 
   NOMBRE: "Docentes JB",
   ESCUELA: "Colegio Jerome Bruner",
