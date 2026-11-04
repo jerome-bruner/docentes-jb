@@ -44,8 +44,14 @@ const App = {
     const o = opciones || {};
     const titulo = o.titulo || CONFIG.NOMBRE;
     const sub = o.sub || '';
+    // La etiqueta de nivel ya no es fija: la trae la ficha del maestro.
+    // Quien da en un solo nivel ve el suyo; quien da en dos no ve
+    // ninguna arriba, porque la cargan las secciones de los accesos.
     const nivel = o.nivel
-      ? '<span class="et-niv"><i></i>' + CONFIG.NIVEL.nombre + '</span>'
+      ? (o.nivel.nombre
+          ? '<span class="et-niv" style="background:' + o.nivel.color + '">' +
+            '<i></i>' + this.escapar(o.nivel.nombre) + '</span>'
+          : '')
       : (sub ? '<small>' + sub + '</small>' : '');
 
     document.getElementById('app').innerHTML =
@@ -501,17 +507,34 @@ const App = {
         'onerror="App.fotoNoCargo(this)">'
       : this.escapar(this.iniciales(d.nombre));
 
+    // Los accesos vienen ya ordenados por nivel desde la API. Cuando
+    // el maestro da en MÁS DE UNO se parten en bloques, cada uno con
+    // el color de su nivel; con uno solo va la lista de siempre.
+    const iconos = { portal: '🏫', avance: '📊', libro: '📗', portada: '🏫' };
+    const lista = d.accesos || [];
+    const niveles = [];
+    lista.forEach((a) => { if (niveles.indexOf(a.nivel) === -1) niveles.push(a.nivel); });
+    const varios = niveles.length > 1;
+
     let accesos = '';
-    (d.accesos || []).forEach((a) => {
-      const iconos = { portal: '🏫', avance: '📊', libro: '📗', portada: '🏫' };
+    let nivelPintado = null;
+    lista.forEach((a) => {
+      if (varios && a.nivel !== nivelPintado) {
+        nivelPintado = a.nivel;
+        accesos += '<p class="rotulo niv" style="color:' + (a.color || '') + '">' +
+          '<span class="pt" style="background:' + (a.color || '') + '"></span>' +
+          this.escapar(a.nivelNombre || a.nivel) + '</p>';
+      }
+      const fondo = a.color ? ' style="background:' + a.color + '1a;color:' + a.color + '"' : '';
       accesos +=
         '<button class="acceso" data-url="' + this.escapar(a.url) + '">' +
-          '<span class="ic">' + (iconos[a.clave] || '›') + '</span>' +
+          '<span class="ic"' + fondo + '>' + (iconos[a.clave] || '›') + '</span>' +
           '<span class="tx"><b>' + this.escapar(a.titulo) + '</b>' +
           '<span>' + this.escapar(a.nota || '') + '</span></span>' +
           '<span class="fl">›</span>' +
         '</button>';
     });
+    if (!varios && lista.length) accesos = '<p class="rotulo">Mis herramientas</p>' + accesos;
 
     this.pintar(
       '<div class="perfil">' +
@@ -525,12 +548,13 @@ const App = {
         '</div>' +
       '</div>' +
       (d.aviso ? this.aviso(d.aviso, 'a') : '') +
-      '<p class="rotulo">Mis herramientas</p>' +
       accesos +
-      this.aviso('Al abrir tu portal, Google te va a pedir tu cuenta del colegio la primera vez. ' +
-                 'Después ya no.', 'a'),
+      (lista.length
+        ? this.aviso('Al abrir tu portal, Google te va a pedir tu cuenta del colegio la primera vez. ' +
+                     'Después ya no.', 'a')
+        : ''),
       { titulo: 'Hola, ' + this.escapar(d.usuario || this.primerNombre(d.nombre)),
-        nivel: true,
+        nivel: this.etiquetaDeNivel(d),
         botones: '<button class="icono" id="b-datos" title="Mis datos">👤</button>',
         despues: () => {
           document.getElementById('b-datos').onclick = () => this.verMisDatos();
@@ -551,6 +575,19 @@ const App = {
     const caja = img.parentNode;
     if (!caja) return;
     caja.textContent = this.iniciales((this.docente || {}).nombre);
+  },
+
+  /**
+   * Qué dice la etiqueta de la barra. Con un solo nivel, ese nivel.
+   * Con dos, nada: ya lo dicen las secciones. Dirección, que entra a
+   * todo, lo dice con todas sus letras.
+   */
+  etiquetaDeNivel(d) {
+    const colores = CONFIG.COLOR_NIVEL || {};
+    const n = d.niveles || [];
+    if (d.esDireccion) return { nombre: 'TODOS LOS NIVELES', color: '#7c0000' };
+    if (n.length === 1) return { nombre: n[0], color: colores[n[0]] || '#C0562A' };
+    return {};
   },
 
   primerNombre(nombre) {

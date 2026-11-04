@@ -216,3 +216,10 @@ p.s{font-size:13.5px;color:var(--gris);margin:0 0 15px}
   animation:gira .8s linear infinite;
 }
 @keyframes gira{to{transform:rotate(360deg)}}
+
+/* ---------- encabezado de nivel en los accesos (1.2.0) ----------
+   Solo sale cuando el maestro da en más de un nivel. El punto de
+   color y el texto van del color del nivel, que la API manda en
+   cada acceso; aquí no hay ningún color de nivel escrito a mano. */
+.rotulo.niv{ display:flex; align-items:center; gap:7px; }
+.rotulo.niv .pt{ width:9px; height:9px; border-radius:50%; display:inline-block; }

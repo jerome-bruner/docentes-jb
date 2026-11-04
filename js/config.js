@@ -19,16 +19,21 @@ const CONFIG = {
   API: "https://script.google.com/macros/s/AKfycbyR7Y4jJwQNfk95jHdp65OqEtw4apXWR75DNBJ9dLznk8fyHXmIfDoO9B9Zfla8Ooj0/exec",
 
   // Sube este número en cada cambio. También en sw.js.
-  VERSION: "1.1.3",
+  VERSION: "1.2.0",
 
   NOMBRE: "Docentes JB",
   ESCUELA: "Colegio Jerome Bruner",
   CICLO: "Ciclo escolar 2026 - 2027",
 
-  // Color del nivel, tomado del sitio informativo público.
-  // Secundaria #C0562A · primaria #2B5EA8 · preescolar #1E7D72.
-  // Hoy la app es solo de secundaria.
-  NIVEL: { nombre: "SECUNDARIA", color: "#C0562A" },
+  // El color de cada nivel, tomado del sitio informativo público.
+  // Desde la 1.2.0 la app YA NO tiene un nivel fijo: cada maestro ve
+  // los niveles donde de verdad da clase, y eso lo dice la API. Aquí
+  // solo queda de qué color se pinta cada uno.
+  COLOR_NIVEL: {
+    PRIMARIA:   "#2B5EA8",
+    SECUNDARIA: "#C0562A",
+    PREESCOLAR: "#1E7D72"
+  },
 
   // Cuántos días la app recuerda el acceso en el teléfono. Tiene que
   // ser menor o igual a DIAS_VIGENCIA_SESION del 00_config.gs de la API.
