@@ -1,0 +1,207 @@
+/* ============================================================
+   DOCENTES JB — estilos
+   Rojo institucional #990000 con la línea dorada del encabezado
+   oficial. El color del nivel (naranja de secundaria) entra solo
+   como acento, nunca como color de la app.
+   ============================================================ */
+
+:root{
+  --rojo:#990000;
+  --rojo-claro:#a80707;
+  --rojo-oscuro:#7c0000;
+  --dorado:#DEBB0E;
+  --dorado-op:#B8960A;
+  --fondo:#FAF7F2;
+  --texto:#1a1a1a;
+  --gris:#5c5c5c;
+  --linea:#e2ddd5;
+  --verde:#1e7a3c;
+  --verde-fondo:#e8f5ec;
+  --ambar:#9a6b00;
+  --ambar-fondo:#fdf3dc;
+  --rojo-aviso:#8c1c1c;
+  --rojo-aviso-fondo:#f9eaea;
+  --nivel:#C0562A;
+}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  background:var(--fondo);
+  color:var(--texto);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  font-size:16px;
+  line-height:1.5;
+  -webkit-text-size-adjust:100%;
+}
+#app{min-height:100%;display:flex;flex-direction:column}
+
+/* ---------- barra de arriba ---------- */
+.barra{
+  background:#990000;
+  background-image:linear-gradient(160deg,#a80707 0%,#7c0000 100%);
+  border-bottom:4px solid transparent;
+  border-image:linear-gradient(90deg,#B8960A 0%,#F3D449 50%,#B8960A 100%) 1;
+  color:#fff;
+  padding:12px 15px;
+  display:flex;align-items:center;gap:12px;
+  padding-top:calc(12px + env(safe-area-inset-top));
+}
+.barra .esc{
+  width:42px;height:42px;border-radius:50%;background:#fff;
+  border:2px solid var(--dorado);flex:0 0 auto;overflow:hidden;
+  display:flex;align-items:center;justify-content:center;
+}
+.barra .esc img{width:30px;height:30px;object-fit:contain}
+.barra .tit{font-size:15px;font-weight:700;line-height:1.2;min-width:0}
+.barra .tit small{display:block;font-weight:400;font-size:12px;opacity:.9;margin-top:2px}
+.barra .der{margin-left:auto;display:flex;gap:8px;align-items:center}
+.barra button.icono{
+  background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.3);
+  color:#fff;border-radius:9px;width:38px;height:38px;font-size:17px;cursor:pointer;
+}
+/* Va en su propio renglón, debajo del nombre: en línea se encima. */
+.et-niv{
+  display:flex;width:max-content;align-items:center;gap:5px;margin-top:4px;
+  background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.4);
+  border-radius:999px;padding:1px 9px 2px;font-size:10.5px;font-weight:700;letter-spacing:.3px;
+}
+.et-niv i{
+  width:8px;height:8px;border-radius:50%;background:var(--nivel);
+  box-shadow:0 0 0 1.5px rgba(255,255,255,.75);
+}
+
+/* ---------- cuerpo ---------- */
+main{
+  flex:1;padding:16px 15px 28px;max-width:560px;width:100%;margin:0 auto;
+  padding-bottom:calc(28px + env(safe-area-inset-bottom));
+}
+.centrado{display:flex;flex-direction:column;justify-content:center;min-height:62vh}
+
+h1.h{font-size:19px;margin:0 0 4px}
+p.s{font-size:13.5px;color:var(--gris);margin:0 0 15px}
+
+.bloque{
+  background:#fff;border:1px solid var(--linea);border-radius:13px;
+  padding:15px;margin-bottom:12px;
+}
+.bloque h4{
+  margin:0 0 9px;font-size:13px;text-transform:uppercase;
+  letter-spacing:.5px;color:var(--gris);
+}
+.rotulo{
+  font-size:12px;font-weight:700;letter-spacing:1px;color:var(--gris);
+  text-transform:uppercase;margin:4px 0 9px 2px;
+}
+
+/* ---------- campos ---------- */
+.campo{margin-bottom:13px}
+.campo label{display:block;font-size:13px;font-weight:600;margin-bottom:5px}
+.campo input{
+  width:100%;border:1.5px solid #d4cec4;border-radius:10px;background:#fff;
+  padding:12px 12px;font-size:16px;    /* 16px o iOS hace zoom al escribir */
+  font-family:inherit;color:var(--texto);
+}
+.campo input:focus{outline:none;border-color:var(--rojo);box-shadow:0 0 0 3px rgba(153,0,0,.1)}
+.campo input[disabled]{background:#f4efe7;color:var(--gris)}
+
+.codigo{display:flex;gap:8px;justify-content:center;margin:4px 0 6px}
+.codigo input{
+  width:46px;height:56px;text-align:center;font-size:24px;font-weight:700;
+  color:var(--rojo);border:1.5px solid #d4cec4;border-radius:10px;background:#fff;
+  font-family:inherit;text-transform:uppercase;padding:0;
+}
+.codigo input:focus{outline:none;border-color:var(--rojo)}
+
+/* ---------- botones ---------- */
+.btn{
+  display:block;width:100%;text-align:center;border:0;border-radius:11px;
+  background:var(--rojo);color:#fff;font-family:inherit;font-size:15px;font-weight:700;
+  padding:13px;cursor:pointer;-webkit-appearance:none;
+}
+.btn:active{background:var(--rojo-oscuro)}
+.btn[disabled]{opacity:.55;cursor:default}
+.btn.sec{background:#fff;color:var(--rojo);border:1.5px solid var(--rojo)}
+.btn.gris{background:#efeae2;color:#4a4a4a}
+.btn + .btn{margin-top:9px}
+.enlace{
+  background:none;border:0;color:var(--rojo);font-family:inherit;font-size:13.5px;
+  text-decoration:underline;cursor:pointer;padding:4px;
+}
+.mini{font-size:12px;color:var(--gris);text-align:center;margin-top:11px;line-height:1.45}
+
+/* ---------- avisos ---------- */
+.aviso{border-radius:11px;padding:12px 14px;margin:12px 0 0;font-size:13.5px;border-left:4px solid}
+.aviso.v{background:var(--verde-fondo);border-color:var(--verde);color:#14532a}
+.aviso.a{background:var(--ambar-fondo);border-color:var(--ambar);color:#5c4300}
+.aviso.r{background:var(--rojo-aviso-fondo);border-color:var(--rojo-aviso);color:var(--rojo-aviso)}
+.aviso b{display:block;margin-bottom:3px}
+
+/* ---------- tarjeta del profesor ---------- */
+.perfil{
+  background:#fff;border:1px solid var(--linea);border-radius:14px;overflow:hidden;
+  margin-bottom:16px;position:relative;border-bottom:4px solid var(--nivel);
+}
+.perfil .port{
+  height:84px;position:relative;overflow:visible;
+  background-image:linear-gradient(135deg,#a80707 0%,#5e0000 100%);
+}
+/* La portada va como <img> y no como background, para poder borrarla
+   si no carga: un background roto no avisa y deja un hueco gris. */
+.perfil .port .portimg{
+  position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+}
+.perfil .foto{
+  position:absolute;left:15px;bottom:-26px;width:66px;height:66px;border-radius:50%;
+  background:#f3ead8;border:3px solid #fff;box-shadow:0 2px 7px rgba(0,0,0,.22);
+  display:flex;align-items:center;justify-content:center;overflow:hidden;
+  font-weight:700;font-size:23px;color:var(--rojo);
+}
+.perfil .foto img{width:100%;height:100%;object-fit:cover}
+.perfil .dat{padding:32px 15px 14px}
+.perfil .dat b{display:block;font-size:15px;line-height:1.25}
+.perfil .dat .mat{font-size:12.5px;font-weight:700;color:var(--nivel);letter-spacing:.3px;margin-top:3px}
+.perfil .dat .grp{font-size:12px;color:var(--gris);margin-top:3px}
+
+/* ---------- accesos ---------- */
+.acceso{
+  display:flex;align-items:center;gap:12px;width:100%;text-align:left;
+  background:#fff;border:1px solid var(--linea);border-radius:12px;
+  padding:13px;margin-bottom:10px;cursor:pointer;font-family:inherit;color:inherit;
+}
+.acceso:active{background:#faf7f2}
+.acceso .ic{
+  width:42px;height:42px;border-radius:11px;background:#fbeee7;color:var(--nivel);
+  display:flex;align-items:center;justify-content:center;font-size:19px;flex:0 0 auto;
+}
+.acceso .tx{flex:1;min-width:0}
+.acceso .tx b{display:block;font-size:14.5px}
+.acceso .tx span{font-size:12px;color:var(--gris)}
+.acceso .fl{color:#b9b2a8;font-size:18px}
+
+/* ---------- renglones ---------- */
+.reng{
+  display:flex;align-items:baseline;gap:10px;font-size:13.5px;
+  padding:8px 0;border-bottom:1px solid #efebe4;
+}
+.reng:last-child{border-bottom:0}
+.reng .et{flex:1;color:#333}
+.reng .vl{font-weight:700;color:var(--rojo);text-align:right;word-break:break-word}
+.reng.ok .vl{color:var(--verde)}
+.reng.no .vl{color:#a9a39a}
+
+/* ---------- pie ---------- */
+.pie{
+  text-align:center;font-size:11.5px;color:#9a948b;padding:18px 15px 10px;line-height:1.5;
+}
+
+/* ---------- cargando ---------- */
+.cargando{display:flex;flex-direction:column;align-items:center;justify-content:center;
+  min-height:60vh;gap:14px;color:var(--gris);font-size:14px}
+.giro{
+  width:34px;height:34px;border-radius:50%;
+  border:3px solid #e6ddd0;border-top-color:var(--rojo);
+  animation:gira .8s linear infinite;
+}
+@keyframes gira{to{transform:rotate(360deg)}}
