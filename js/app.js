@@ -529,7 +529,7 @@ const App = {
       accesos +
       this.aviso('Al abrir tu portal, Google te va a pedir tu cuenta del colegio la primera vez. ' +
                  'Después ya no.', 'a'),
-      { titulo: 'Hola, ' + this.escapar(this.primerNombre(d.nombre)),
+      { titulo: 'Hola, ' + this.escapar(d.usuario || this.primerNombre(d.nombre)),
         nivel: true,
         botones: '<button class="icono" id="b-datos" title="Mis datos">👤</button>',
         despues: () => {
@@ -554,7 +554,10 @@ const App = {
   },
 
   primerNombre(nombre) {
-    const partes = (nombre || '').trim().split(/\s+/);
+    // Cinturón de seguridad: si por lo que sea llegara un correo como
+    // nombre, se enseña lo de antes del @, nunca la dirección entera.
+    const limpio = (nombre || '').split('@')[0].trim();
+    const partes = limpio.split(/\s+/).filter(Boolean);
     return partes.length ? partes[0] : 'profe';
   },
 
